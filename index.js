@@ -5,9 +5,10 @@ const vendorRoutes = require("./routes/vendorRoutes");
 const bodyParser = require("body-parser");
 const firmRoutes = require("./routes/firmRoutes");
 const productRoutes = require("./routes/productRoutes");
-const path = require("path");
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
 
 dotEnv.config();
 const PORT = process.env.PORT || 8080;
