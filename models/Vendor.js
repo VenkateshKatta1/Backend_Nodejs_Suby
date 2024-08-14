@@ -20,6 +20,12 @@ const vendorSchema = new mongoose.Schema({
       ref: "Firm",
     },
   ],
+  product: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
+  ],
 });
 
 const Vendor = mongoose.model("Vendor", vendorSchema);

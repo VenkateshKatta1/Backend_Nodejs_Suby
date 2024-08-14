@@ -65,6 +65,7 @@ const getAllVendors = async (req, res) => {
 
 const getVendorById = async (req, res) => {
   const vendorId = req.params.id;
+  console.log("Fetching vendor by ID:", vendorId);
   try {
     const vendor = await Vendor.findById(vendorId)
       .populate("firm")
@@ -72,11 +73,16 @@ const getVendorById = async (req, res) => {
     if (!vendor) {
       return res.status(404).json({ error: "Vendor not found" });
     }
+    if (!vendor.firm || vendor.firm.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No firms associated with this vendor" });
+    }
     const vendorFirmId = vendor.firm[0]._id;
     res.status(200).json({ vendor, vendorFirmId });
-    console.log(vendor, vendorFirmId);
+    console.log("Vendor Firm ID:", vendorFirmId);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching vendor by ID:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
