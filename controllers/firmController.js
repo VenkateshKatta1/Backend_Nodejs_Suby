@@ -60,6 +60,15 @@ const deleteFirmById = async (req, res) => {
     if (!deletedFirm) {
       return res.status(404).json({ error: "Firm not found" });
     }
+    await Vendor.updateOne(
+      {
+        _id: deletedFirm.vendor[0],
+      },
+      {
+        $pull: { firm: firmId },
+      }
+    );
+    return res.status(200).json({ message: "Firm deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
