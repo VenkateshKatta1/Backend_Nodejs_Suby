@@ -71,11 +71,11 @@ const getVendorById = async (req, res) => {
       .populate("firm")
       .populate("product");
     if (!vendor) {
-      return res.status(404).json({ error: "Vendor not found" });
+      return res.status(404).json("Vendor not found");
     }
     if (!vendor.firm || vendor.firm.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json({ error: "No firms associated with this vendor" });
     }
     const vendorFirmId = vendor.firm[0]._id;
