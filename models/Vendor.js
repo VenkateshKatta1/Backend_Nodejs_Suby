@@ -14,6 +14,13 @@ const vendorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  number: {
+    type: Number,
+    required: true,
+  },
+  createdTimeStamp: {
+    type: Date,
+  },
   firm: [
     {
       type: mongoose.Schema.Types.ObjectId,

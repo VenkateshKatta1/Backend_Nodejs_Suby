@@ -25,6 +25,7 @@ const addFirm = async (req, res) => {
     }
 
     if (vendor.firm.length > 0) {
+      console.log("vendor.firm.length:", vendor.firm.length);
       return res.status(400).json({ message: "Vendor can have only one firm" });
     }
 
@@ -40,13 +41,15 @@ const addFirm = async (req, res) => {
 
     const savedFirm = await firm.save();
 
-    const firmId = savedFirm._id;
+    const vendorFirmId = savedFirm._id;
 
     vendor.firm.push(savedFirm);
 
     await vendor.save();
 
-    return res.status(200).json({ message: "Firm added successfully", firmId });
+    return res
+      .status(200)
+      .json({ message: "Firm added successfully", vendorFirmId });
   } catch (error) {
     console.error(error);
     return res.status(500).json("Internal server error");
@@ -68,7 +71,7 @@ const deleteFirmById = async (req, res) => {
         $pull: { firm: firmId },
       }
     );
-    return res.status(200).json({ message: "Firm deleted successfully" });
+    res.status(200).json({ message: "Firm deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

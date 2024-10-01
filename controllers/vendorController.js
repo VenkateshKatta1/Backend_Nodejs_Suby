@@ -7,7 +7,7 @@ dotEnv.config();
 const secretKey = process.env.WhatIsYourName;
 
 const vendorRegister = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, number } = req.body;
   console.log(req.body);
   try {
     const vendorEmail = await Vendor.findOne({ email });
@@ -17,12 +17,18 @@ const vendorRegister = async (req, res) => {
     if (!password) {
       return res.status(400).json({ error: "Password is required" });
     }
+    if (!number) {
+      return res.status(400).json({ error: "Ph.Number is required" });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
+    const createdTimeStamp = new Date();
 
     const newVendor = new Vendor({
       username,
       email,
       password: hashedPassword,
+      number,
+      createdTimeStamp,
     });
     await newVendor.save();
 
@@ -45,8 +51,16 @@ const vendorLogin = async (req, res) => {
       expiresIn: "1h",
     });
     const vendorId = vendor._id;
-    res.status(200).json({ success: "Login successful", token, vendorId });
-    console.log(email, "This is token: ", token);
+    const vendorName = vendor.username;
+    const vendorCreatedTime = vendor.createdTimeStamp;
+    res.status(200).json({
+      success: "Login successful",
+      token,
+      vendorId,
+      vendorName,
+      vendorCreatedTime,
+    });
+    // console.log(email, "This is token: ", token);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal server error" });
@@ -65,7 +79,7 @@ const getAllVendors = async (req, res) => {
 
 const getVendorById = async (req, res) => {
   const vendorId = req.params.id;
-  console.log("Fetching vendor by ID:", vendorId);
+  // console.log("Fetching vendor by ID:", vendorId);
   try {
     const vendor = await Vendor.findById(vendorId)
       .populate("firm")
@@ -80,9 +94,8 @@ const getVendorById = async (req, res) => {
     }
     const vendorFirmId = vendor.firm[0]._id;
     res.status(200).json({ vendor, vendorFirmId });
-    console.log("Vendor Firm ID:", vendorFirmId);
   } catch (error) {
-    console.error("Error fetching vendor by ID:", error);
+    // console.error("Error fetching vendor by ID:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
