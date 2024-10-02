@@ -50,7 +50,7 @@ const getProductByFirm = async (req, res) => {
     const firmId = req.params.firmId;
     const firm = await Firm.findById(firmId);
 
-    if (!firm) {
+    if (!firm && !firmId) {
       return res.status(404).json({ error: "No firm found" });
     }
 
@@ -59,7 +59,7 @@ const getProductByFirm = async (req, res) => {
     res.status(200).json({ restaurantName, products });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: error });
   }
 };
 
