@@ -1,5 +1,6 @@
 const Firm = require("../models/Firm");
 const Vendor = require("../models/Vendor");
+const Product = require("../models/Product");
 const multer = require("multer");
 const Path = require("path");
 
@@ -59,19 +60,27 @@ const addFirm = async (req, res) => {
 const deleteFirmById = async (req, res) => {
   try {
     const firmId = req.params.firmId;
+
+    // Delete the firm by its ID
     const deletedFirm = await Firm.findByIdAndDelete(firmId);
     if (!deletedFirm) {
       return res.status(404).json({ error: "Firm not found" });
     }
+
+    // Delete all products associated with this firm
+    await Product.deleteMany({ firm: firmId });
+
+    // Remove the firm reference from the vendor
     await Vendor.updateOne(
-      {
-        _id: deletedFirm.vendor[0],
-      },
+      { _id: deletedFirm.vendor },
       {
         $pull: { firm: firmId },
       }
     );
-    res.status(200).json({ message: "Firm deleted successfully" });
+
+    res
+      .status(200)
+      .json({ message: "Firm and associated products deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
